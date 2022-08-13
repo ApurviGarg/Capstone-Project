@@ -1,0 +1,39 @@
+git remote add origin git@github.com:User/UserRepo.git
+
+
+COMMANDS TO UNTRACK DELETED OR MODIFIED FILES FROM CACHE *********************************
+The series of commands below will remove all of the items from the Git index 
+(not from the working directory or local repository), and then will update the Git index, 
+while respecting Git ignores. PS. Index = Cache
+
+First:
+git rm -r --cached .
+git add .
+
+Then:
+git commit -am "Remove ignored files"
+
+Or as a one-liner:
+git rm -r --cached . && git add . && git commit -am "Remove ignored files"
+
+
+GIT EXTENSION FOR VERSIONING LARGE FILES ************************************************
+
+1. Download and install the Git command line extension. Once downloaded
+   and installed, set up Git LFS for your user account by running:
+
+   git lfs install
+
+2. In each Git repository where you want to use Git LFS, select the file 
+   types you'd like Git LFS to manage (or directly edit your .gitattributes). 
+   You can configure additional file extensions at anytime.
+
+   git lfs track "*.psd"
+   git add .gitattributes
+
+   To convert any pre-existing files to Git LFS such as files on other branches
+   or prior commit history, use "git lfs migrate(1)" command
+
+3. git add file.psd
+   git commit -m "Add design file"
+   git push origin main 

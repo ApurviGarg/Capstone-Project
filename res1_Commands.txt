@@ -1,0 +1,65 @@
+COMMAND TO CREATE VIRTUAL ENV. 
+python -m venv E:\"Capstone project"\"Capstone-Project(name of folder)"\CapsVenv
+
+## venv is to create vir. env. Location is given for the env. to get installed in 
+## "python" in the beginning copies the main python package with all the folders(lib, Scripts, Include)
+Create virtual environment folder in the folder where you want to build your project. Place all the files of project in superfolder that 
+contains vir. env. folder too.
+
+
+COMMAND TO SHOW ALL THE PACKAGES INSTALLED AND THEIR VERSIONS 
+pip list
+
+## Example:
+Package                 Version
+----------------------- ---------
+bleach                  5.0.0    
+certifi                 2022.6.15
+charset-normalizer      2.0.12
+commonmark              0.9.1
+distlib                 0.3.5
+docutils                0.18.1
+filelock                3.7.1
+idna                    3.3
+importlib-metadata      4.11.4
+keyring                 23.6.0
+numpy                   1.22.4
+pandas                  1.4.2
+pip                     22.0.4
+pkginfo                 1.8.3
+platformdirs            2.5.2
+Pygments                2.12.0
+python-dateutil         2.8.2
+pytz                    2022.1
+pywin32-ctypes          0.2.0
+readme-renderer         35.0
+requests                2.28.0
+requests-toolbelt       0.9.1
+rfc3986                 2.0.0
+rich                    12.4.4
+setuptools              62.5.0
+six                     1.16.0
+Topsis-Pramit-101903198 1.0.2
+
+
+COMMAND TO ACTIVATE THE VIR. ENV.
+CapsVenv/Scripts/activate
+
+
+COMMAND TO DEACTIVATE THE VIR. ENV.
+deactivate
+
+
+COMMAND TO CREATE requirements.txt file 
+pip freeze > requirements.txt
+
+
+COMMAND TO INSTALL ALL DEPENDENCIES(LIBRARIES) FROM requirements.txt
+pip install -r requirements.txt
+
+
+RESOURCES
+Python Tutorial: Using Virtual Environments With GitHub:  https://www.youtube.com/watch?v=6W6iY7uUu34
+The Complete Guide to Python Virtual Environments!:  https://www.youtube.com/watch?v=KxvKCSwlUv8
+Create Virtual Environment Visual Studio Code | Virtual Environment in Python:  https://www.youtube.com/watch?v=RUGm1Lwc55s
+
