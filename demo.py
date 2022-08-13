@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Web camera
-cap = cv2.VideoCapture('res3_video.mp4')
+cap = cv2.VideoCapture('Resources/res3_video.mp4')
 
 # Initialize Substructor
 

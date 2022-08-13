@@ -62,4 +62,4 @@ RESOURCES
 Python Tutorial: Using Virtual Environments With GitHub:  https://www.youtube.com/watch?v=6W6iY7uUu34
 The Complete Guide to Python Virtual Environments!:  https://www.youtube.com/watch?v=KxvKCSwlUv8
 Create Virtual Environment Visual Studio Code | Virtual Environment in Python:  https://www.youtube.com/watch?v=RUGm1Lwc55s
-
+How to remove already tracked file and add it to .gitignore file: https://www.youtube.com/watch?v=bEMIjwDfG-U&ab_channel=Learn4Tarakki
