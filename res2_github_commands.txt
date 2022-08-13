@@ -1,5 +1,15 @@
-git remote add origin git@github.com:User/UserRepo.git
+TO CLONE GIT REPO AND MAKE CHANGES IN IT ***********************************************
+git clone git@github.com:User/UserRepo.git
+git add .
+git commit -m "message"
+git push
 
+
+TO MAKE LOCAL REPO AS A GIT REPO ********************************************************
+git remote add origin git@github.com:User/UserRepo.git
+git add .
+git commit -m "message"
+git push
 
 COMMANDS TO UNTRACK DELETED OR MODIFIED FILES FROM CACHE *********************************
 The series of commands below will remove all of the items from the Git index 
@@ -37,3 +47,11 @@ GIT EXTENSION FOR VERSIONING LARGE FILES ***************************************
 3. git add file.psd
    git commit -m "Add design file"
    git push origin main 
+
+
+
+TO SEND LARGER DATA FROM GIT TO GITHUB **************************************************
+git config --global http.postBuffer 524288000
+500 MB: 524288000 (as posted in the original answer)
+1 GB: 1048576000
+2 GB: 2097152000 (anything higher is rejected as 'out of range')
