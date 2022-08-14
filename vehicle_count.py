@@ -12,7 +12,7 @@ from tracker import *
 tracker = EuclideanDistTracker()
 
 # Initialize the videocapture object
-cap = cv2.VideoCapture('res3_video.mp4')
+cap = cv2.VideoCapture('Resources/res5_video.mp4')
 input_size = 320
 
 # Detection confidence threshold
@@ -30,7 +30,7 @@ down_line_position = middle_line_position + 15
 
 
 # Store Coco Names in a list
-classesFile = "coco.names"
+classesFile = "Resources/coco.names"
 classNames = open(classesFile).read().strip().split('\n')
 #print(classNames)
 #print(len(classNames))
@@ -41,16 +41,16 @@ required_class_index = [2, 3, 5, 7]
 detected_classNames = []
 
 ## Model Files
-modelConfiguration = 'yolov3-320.cfg'
-modelWeigheights = 'yolov3-320.weights'
+modelConfiguration = 'YoloFiles/yolov3-320.cfg'
+modelWeigheights = 'YoloFiles/yolov3-320.weights'
 
 # configure the network model
 net = cv2.dnn.readNetFromDarknet(modelConfiguration, modelWeigheights)
 
 # Configure the network backend
 
-#net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-#net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 # Define random colour for each class
 np.random.seed(42)
@@ -160,7 +160,7 @@ def realTime():
         # Set the input of the network
         net.setInput(blob)
         layersNames = net.getLayerNames()
-        outputNames = [(layersNames[i[0] - 1]) for i in net.getUnconnectedOutLayers()]
+        outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
         # Feed data to the network
         outputs = net.forward(outputNames)
     
@@ -184,7 +184,7 @@ def realTime():
         # Show the frames
         cv2.imshow('Output', img)
 
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) == 13:
             break
 
     # Write the vehicle counting information in a file and save it
@@ -199,7 +199,10 @@ def realTime():
     f1.close()
     # print("Data saved at 'data.csv'")
     # Finally realese the capture object and destroy all active windows
-    #cap.release()
-    #cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
 
 
+if __name__ == '__main__':
+    realTime()
+    #from_static_image(image_file)
