@@ -1,5 +1,3 @@
-# TechVidvan Vehicle counting and Classification
-
 # Import necessary packages
 
 import cv2
@@ -30,7 +28,7 @@ down_line_position = middle_line_position + 15
 
 
 # Store Coco Names in a list
-classesFile = "Resources/coco.names"
+classesFile = "Resources/coco.names" # "coco.names" in the same directory
 classNames = open(classesFile).read().strip().split('\n')
 #print(classNames)
 #print(len(classNames))
@@ -41,8 +39,8 @@ required_class_index = [2, 3, 5, 7]
 detected_classNames = []
 
 ## Model Files
-modelConfiguration = 'YoloFiles/yolov3-320.cfg'
-modelWeigheights = 'YoloFiles/yolov3-320.weights'
+modelConfiguration = 'YoloFiles/yolov3-320.cfg' # "yolov3-320.cfg" in same directory
+modelWeigheights = 'YoloFiles/yolov3-320.weights' # "yolov3-320.weights" in same directory
 
 # configure the network model
 net = cv2.dnn.readNetFromDarknet(modelConfiguration, modelWeigheights)
