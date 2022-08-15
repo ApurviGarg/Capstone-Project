@@ -46,7 +46,6 @@ modelWeigheights = 'YoloFiles/yolov3-320.weights' # "yolov3-320.weights" in same
 net = cv2.dnn.readNetFromDarknet(modelConfiguration, modelWeigheights)
 
 # Configure the network backend
-
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 

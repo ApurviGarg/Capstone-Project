@@ -1,5 +1,3 @@
-# TechVidvan Vehicle-Tracker
-
 import math
 
 class EuclideanDistTracker:
