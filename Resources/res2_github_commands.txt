@@ -1,5 +1,4 @@
 TO CLONE GIT REPO AND MAKE CHANGES IN IT ***********************************************
-git init
 git clone git@github.com:User/UserRepo.git  # in super folder
 git add .
 git commit -m "message"
