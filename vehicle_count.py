@@ -153,10 +153,6 @@ def postProcess(outputs,img):
 def realTime():
     videos = [cap1, cap2, cap3, cap4]
     for cap in videos:
-        temp_up_list = []
-        temp_down_list = []
-        up_list = [0, 0, 0, 0]
-        down_list = [0, 0, 0, 0]
         while True:
             success, img = cap.read()
             img = cv2.resize(img,(0,0),None,0.5,0.5)
