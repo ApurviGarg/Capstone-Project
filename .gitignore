@@ -7,7 +7,7 @@ __pycache__/
 Capsvenv/
 
 # cfg file
-*.cfg
+#*.cfg
 
 # C extensions
 *.so
