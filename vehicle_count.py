@@ -10,7 +10,10 @@ from tracker import *
 tracker = EuclideanDistTracker()
 
 # Initialize the videocapture object
-cap = cv2.VideoCapture('Resources/res5_video.mp4')
+cap1 = cv2.VideoCapture('Resources/res3_video.mp4')
+cap2 = cv2.VideoCapture('Resources/res5_video.mp4')
+cap3 = cv2.VideoCapture('Resources/res5_video.mp4')
+cap4 = cv2.VideoCapture('Resources/res5_video.mp4')
 input_size = 320
 
 # Detection confidence threshold
@@ -148,56 +151,62 @@ def postProcess(outputs,img):
 
 
 def realTime():
-    while True:
-        success, img = cap.read()
-        img = cv2.resize(img,(0,0),None,0.5,0.5)
-        ih, iw, channels = img.shape
-        blob = cv2.dnn.blobFromImage(img, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
+    videos = [cap1, cap2, cap3, cap4]
+    for cap in videos:
+        temp_up_list = []
+        temp_down_list = []
+        up_list = [0, 0, 0, 0]
+        down_list = [0, 0, 0, 0]
+        while True:
+            success, img = cap.read()
+            img = cv2.resize(img,(0,0),None,0.5,0.5)
+            ih, iw, channels = img.shape
+            blob = cv2.dnn.blobFromImage(img, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
 
-        # Set the input of the network
-        net.setInput(blob)
-        layersNames = net.getLayerNames()
-        outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
-        # Feed data to the network
-        outputs = net.forward(outputNames)
-    
-        # Find the objects from the network output
-        postProcess(outputs,img)
+            # Set the input of the network
+            net.setInput(blob)
+            layersNames = net.getLayerNames()
+            outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
+            # Feed data to the network
+            outputs = net.forward(outputNames)
 
-        # Draw the crossing lines
+            # Find the objects from the network output
+            postProcess(outputs,img)
 
-        cv2.line(img, (0, middle_line_position), (iw, middle_line_position), (255, 0, 255), 2)
-        cv2.line(img, (0, up_line_position), (iw, up_line_position), (0, 0, 255), 2)
-        cv2.line(img, (0, down_line_position), (iw, down_line_position), (0, 0, 255), 2)
+            # Draw the crossing lines
 
-        # Draw counting texts in the frame
-        cv2.putText(img, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-        cv2.putText(img, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-        cv2.putText(img, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-        cv2.putText(img, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-        cv2.putText(img, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-        cv2.putText(img, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.line(img, (0, middle_line_position), (iw, middle_line_position), (255, 0, 255), 2)
+            cv2.line(img, (0, up_line_position), (iw, up_line_position), (0, 0, 255), 2)
+            cv2.line(img, (0, down_line_position), (iw, down_line_position), (0, 0, 255), 2)
 
-        # Show the frames
-        cv2.imshow('Output', img)
+            # Draw counting texts in the frame
+            cv2.putText(img, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
 
-        if cv2.waitKey(1) == 13:
-            break
+            # Show the frames
+            cv2.imshow('Output', img)
 
-    # Write the vehicle counting information in a file and save it
+            if cv2.waitKey(1) == 13:
+                break
 
-    with open("data.csv", 'w') as f1:
-        cwriter = csv.writer(f1)
-        cwriter.writerow(['Direction', 'car', 'motorbike', 'bus', 'truck'])
-        up_list.insert(0, "Up")
-        down_list.insert(0, "Down")
-        cwriter.writerow(up_list)
-        cwriter.writerow(down_list)
-    f1.close()
-    # print("Data saved at 'data.csv'")
-    # Finally realese the capture object and destroy all active windows
-    cap.release()
-    cv2.destroyAllWindows()
+        # Write the vehicle counting information in a file and save it
+
+        with open("data.csv", 'w') as f1:
+            cwriter = csv.writer(f1)
+            cwriter.writerow(['Direction', 'car', 'motorbike', 'bus', 'truck'])
+            up_list.insert(0, "Up")
+            down_list.insert(0, "Down")
+            cwriter.writerow(up_list)
+            cwriter.writerow(down_list)
+        f1.close()
+        # print("Data saved at 'data.csv'")
+        # Finally realese the capture object and destroy all active windows
+        cap.release()
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
