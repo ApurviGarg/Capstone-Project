@@ -3,6 +3,7 @@ git clone git@github.com:User/UserRepo.git  # in super folder
 git add .
 git commit -m "message"
 git push
+git pull
 
 
 TO MAKE LOCAL REPO AS A GIT REPO ********************************************************
@@ -11,6 +12,7 @@ git remote add origin git@github.com:User/UserRepo.git
 git add .
 git commit -m "message"
 git push
+git pull
 
 COMMANDS TO UNTRACK DELETED OR MODIFIED FILES FROM CACHE *********************************
 The series of commands below will remove all of the items from the Git index 
