@@ -162,7 +162,7 @@ def realTime():
             # Set the input of the network
             net.setInput(blob)
             layersNames = net.getLayerNames()
-            outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
+            outputNames = [(layersNames[i[0] - 1]) for i in net.getUnconnectedOutLayers()]
             # Feed data to the network
             outputs = net.forward(outputNames)
 

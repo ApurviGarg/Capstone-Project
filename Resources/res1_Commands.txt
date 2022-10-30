@@ -63,3 +63,10 @@ Python Tutorial: Using Virtual Environments With GitHub:  https://www.youtube.co
 The Complete Guide to Python Virtual Environments!:  https://www.youtube.com/watch?v=KxvKCSwlUv8
 Create Virtual Environment Visual Studio Code | Virtual Environment in Python:  https://www.youtube.com/watch?v=RUGm1Lwc55s
 How to remove already tracked file and add it to .gitignore file: https://www.youtube.com/watch?v=bEMIjwDfG-U&ab_channel=Learn4Tarakki
+
+
+Build OpenCV from source with CUDA for GPU access on Windows:
+https://medium.com/analytics-vidhya/build-opencv-from-source-with-cuda-for-gpu-access-on-windows-5cd0ce2b9b37#30e9
+Build and Install OpenCV With CUDA GPU Support on Windows 10 | OpenCV 4.5.1 | 2021: https://www.youtube.com/watch?v=YsmhKar8oOc&ab_channel=TheCodingBug
+How To Install and Build OpenCV with GPU for C++: https://www.youtube.com/watch?v=-GY2gT2umpk&list=PLkmvobsnE0GHMmTF7GTzJnCISue1L9fJn&index=39&ab_channel=NicolaiNielsen-ComputerVision%26AI
+
