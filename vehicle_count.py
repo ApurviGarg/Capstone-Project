@@ -5,15 +5,12 @@ import csv
 import collections
 import numpy as np
 from tracker import *
+from multiprocessing import Process
+import time
 
 # Initialize Tracker
 tracker = EuclideanDistTracker()
 
-# Initialize the videocapture object
-cap1 = cv2.VideoCapture('Resources/res3_video.mp4')
-cap2 = cv2.VideoCapture('Resources/res5_video.mp4')
-cap3 = cv2.VideoCapture('Resources/res3_video.mp4')
-cap4 = cv2.VideoCapture('Resources/res5_video.mp4')
 input_size = 320
 
 # Detection confidence threshold
@@ -150,33 +147,32 @@ def postProcess(outputs,img):
         count_vehicle(box_id, img)
 
 
-def realTime():
-  # videos = [cap1,cap2,cap3,cap4]
-  #  for cap in videos:
+def realTime(video):
+        cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
-            success2, img2 = cap2.read()
-            success3, img3 = cap3.read()
-            success4, img4 = cap4.read()
+            # success2, img2 = cap2.read()
+            # success3, img3 = cap3.read()
+            # success4, img4 = cap4.read()
             img1 = cv2.resize(img1,(0,0),None,0.5,0.5)
-            img2 = cv2.resize(img2,(0,0),None,0.5,0.5)
-            img3 = cv2.resize(img3,(0,0),None,0.5,0.5)
-            img4 = cv2.resize(img4,(0,0),None,0.5,0.5)
+            # img2 = cv2.resize(img2,(0,0),None,0.5,0.5)
+            # img3 = cv2.resize(img3,(0,0),None,0.5,0.5)
+            # img4 = cv2.resize(img4,(0,0),None,0.5,0.5)
             ih1, iw1, channels = img1.shape
-            ih2, iw2, channels = img2.shape
-            ih3, iw3, channels = img3.shape
-            ih4, iw4, channels = img4.shape
+            # ih2, iw2, channels = img2.shape
+            # ih3, iw3, channels = img3.shape
+            # ih4, iw4, channels = img4.shape
 
             blob1 = cv2.dnn.blobFromImage(img1, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
-            blob2 = cv2.dnn.blobFromImage(img2, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
-            blob3 = cv2.dnn.blobFromImage(img3, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
-            blob4 = cv2.dnn.blobFromImage(img4, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
+            # blob2 = cv2.dnn.blobFromImage(img2, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
+            # blob3 = cv2.dnn.blobFromImage(img3, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
+            # blob4 = cv2.dnn.blobFromImage(img4, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
 
             # Set the input of the network
             net.setInput(blob1)
-            net.setInput(blob2)
-            net.setInput(blob3)
-            net.setInput(blob4)
+            # net.setInput(blob2)
+            # net.setInput(blob3)
+            # net.setInput(blob4)
             
             layersNames = net.getLayerNames()
             outputNames = [(layersNames[i[0] - 1]) for i in net.getUnconnectedOutLayers()]
@@ -185,9 +181,9 @@ def realTime():
 
             # Find the objects from the network output
             postProcess(outputs,img1)
-            postProcess(outputs,img2)
-            postProcess(outputs,img3)
-            postProcess(outputs,img4)
+            # postProcess(outputs,img2)
+            # postProcess(outputs,img3)
+            # postProcess(outputs,img4)
             
             # Draw the crossing lines
 
@@ -195,17 +191,17 @@ def realTime():
             cv2.line(img1, (0, up_line_position), (iw1, up_line_position), (0, 0, 255), 2)
             cv2.line(img1, (0, down_line_position), (iw1, down_line_position), (0, 0, 255), 2)
 
-            cv2.line(img2, (0, middle_line_position), (iw2, middle_line_position), (255, 0, 255), 2)
-            cv2.line(img2, (0, up_line_position), (iw2, up_line_position), (0, 0, 255), 2)
-            cv2.line(img2, (0, down_line_position), (iw2, down_line_position), (0, 0, 255), 2)
+            # cv2.line(img2, (0, middle_line_position), (iw2, middle_line_position), (255, 0, 255), 2)
+            # cv2.line(img2, (0, up_line_position), (iw2, up_line_position), (0, 0, 255), 2)
+            # cv2.line(img2, (0, down_line_position), (iw2, down_line_position), (0, 0, 255), 2)
 
-            cv2.line(img3, (0, middle_line_position), (iw3, middle_line_position), (255, 0, 255), 2)
-            cv2.line(img3, (0, up_line_position), (iw3, up_line_position), (0, 0, 255), 2)
-            cv2.line(img3, (0, down_line_position), (iw3, down_line_position), (0, 0, 255), 2)
+            # cv2.line(img3, (0, middle_line_position), (iw3, middle_line_position), (255, 0, 255), 2)
+            # cv2.line(img3, (0, up_line_position), (iw3, up_line_position), (0, 0, 255), 2)
+            # cv2.line(img3, (0, down_line_position), (iw3, down_line_position), (0, 0, 255), 2)
 
-            cv2.line(img4, (0, middle_line_position), (iw4, middle_line_position), (255, 0, 255), 2)
-            cv2.line(img4, (0, up_line_position), (iw4, up_line_position), (0, 0, 255), 2)
-            cv2.line(img4, (0, down_line_position), (iw4, down_line_position), (0, 0, 255), 2)
+            # cv2.line(img4, (0, middle_line_position), (iw4, middle_line_position), (255, 0, 255), 2)
+            # cv2.line(img4, (0, up_line_position), (iw4, up_line_position), (0, 0, 255), 2)
+            # cv2.line(img4, (0, down_line_position), (iw4, down_line_position), (0, 0, 255), 2)
 
             # Draw counting texts in the frame
             cv2.putText(img1, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
@@ -216,35 +212,35 @@ def realTime():
             cv2.putText(img1, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
 
-            cv2.putText(img2, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img2, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img2, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
 
-            cv2.putText(img3, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img3, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # # cv2.putText(img3, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img3, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
 
-            cv2.putText(img4, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img4, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            # cv2.putText(img4, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
 
             # Show the frames
             cv2.imshow('Output1', img1)
-            cv2.imshow('Output2', img2)
-            cv2.imshow('Output3', img3)
-            cv2.imshow('Output4', img4)
+            # cv2.imshow('Output2', img2)
+            # cv2.imshow('Output3', img3)
+            # cv2.imshow('Output4', img4)
 
             if cv2.waitKey(1) == 13:
                 break
@@ -262,12 +258,17 @@ def realTime():
         # print("Data saved at 'data.csv'")
         # Finally realese the capture object and destroy all active windows
         cap1.release()
-        cap2.release()
-        cap3.release()
-        cap4.release()
+        # cap2.release()
+        # cap3.release()
+        # cap4.release()
         cv2.destroyAllWindows()
 
+def Main():
+    Videos = ['Resources/res3_video.mp4','Resources/res5_video.mp4','Resources/res3_video.mp4','Resources/res5_video.mp4']
+    for i in Videos:
+        process = Process(target=realTime, args=(i))
+        process.start()
 
 if __name__ == '__main__':
-    realTime()
+    Main()
     #from_static_image(image_file)
