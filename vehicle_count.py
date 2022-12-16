@@ -1,6 +1,7 @@
 # Import necessary packages
 
 import cv2
+import os 
 import csv
 import collections
 import numpy as np
@@ -25,7 +26,8 @@ busTime = 2.5
 truckTime = 2.5
 ambulanceTime = 2.5
 
-timeElapsed =0
+start=time.perf_counter()
+finish=0
 
 font_color = (0, 0, 255)
 font_size = 0.5
@@ -158,7 +160,7 @@ def postProcess(outputs,img):
 
 
 def realTime(video):
-        global timeElapsed
+        global start , finish
         cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
@@ -168,8 +170,8 @@ def realTime(video):
             else :
                 img1 = cv2.resize(img1,(0,0),None,1,1)
             
-            timeElapsed+=1
-
+            finish=time.perf_counter()
+            print("timeelapsed:" , round(finish-start)  , "for process:" , format(os.getpid()))
             ih1, iw1, channels = img1.shape
 
             blob1 = cv2.dnn.blobFromImage(img1, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
@@ -179,7 +181,7 @@ def realTime(video):
           
             
             layersNames = net.getLayerNames()
-            outputNames = [(layersNames[i[0] - 1]) for i in net.getUnconnectedOutLayers()]
+            outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
             # Feed data to the network
             #print("ouptutNames:", outputNames)
             outputs = net.forward(outputNames)
@@ -205,7 +207,8 @@ def realTime(video):
             # Show the frames
             cv2.imshow('Output1', img1)
           
-            cv2.waitKey(5000)
+            if finish-start >=10 :
+                break
                 
 
         # Write the vehicle counting information in a file and save it
