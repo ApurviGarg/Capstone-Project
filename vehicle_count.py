@@ -17,6 +17,16 @@ input_size = 320
 confThreshold =0.2
 nmsThreshold= 0.2
 
+# Average times for vehicles to pass the intersection
+carTime = 2
+bikeTime = 1
+rickshawTime = 2.25 
+busTime = 2.5
+truckTime = 2.5
+ambulanceTime = 2.5
+
+timeElapsed =0
+
 font_color = (0, 0, 255)
 font_size = 0.5
 font_thickness = 2
@@ -148,6 +158,7 @@ def postProcess(outputs,img):
 
 
 def realTime(video):
+        global timeElapsed
         cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
@@ -156,8 +167,8 @@ def realTime(video):
                 img1 = cv2.resize(img1,(0,0),None,0.5,0.5)
             else :
                 img1 = cv2.resize(img1,(0,0),None,1,1)
-
-
+            
+            timeElapsed+=1
 
             ih1, iw1, channels = img1.shape
 
@@ -194,8 +205,8 @@ def realTime(video):
             # Show the frames
             cv2.imshow('Output1', img1)
           
-            if cv2.waitKey(1) == 13:
-                break
+            cv2.waitKey(5000)
+                
 
         # Write the vehicle counting information in a file and save it
 
@@ -210,7 +221,8 @@ def realTime(video):
         # print("Data saved at 'data.csv'")
         # Finally realese the capture object and destroy all active windows
         cap1.release()
-   
+         
+
         cv2.destroyAllWindows()
 
 def Main():
