@@ -1,7 +1,6 @@
 # Import necessary packages
 
 import cv2
-import os 
 import csv
 import collections
 import numpy as np
@@ -26,8 +25,7 @@ busTime = 2.5
 truckTime = 2.5
 ambulanceTime = 2.5
 
-start=time.perf_counter()
-finish=0
+timeElapsed =0
 
 font_color = (0, 0, 255)
 font_size = 0.5
@@ -160,7 +158,7 @@ def postProcess(outputs,img):
 
 
 def realTime(video):
-        global start , finish
+        # global timeElapsed
         cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
@@ -170,8 +168,8 @@ def realTime(video):
             else :
                 img1 = cv2.resize(img1,(0,0),None,1,1)
             
-            finish=time.perf_counter()
-            print("timeelapsed:" , round(finish-start)  , "for process:" , format(os.getpid()))
+            # timeElapsed+=1
+            # print("timeelapsed:" , timeElapsed)
             ih1, iw1, channels = img1.shape
 
             blob1 = cv2.dnn.blobFromImage(img1, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
@@ -207,8 +205,8 @@ def realTime(video):
             # Show the frames
             cv2.imshow('Output1', img1)
           
-            if finish-start >=10 :
-                break
+            if cv2.waitKey(1)==13 :
+             break
                 
 
         # Write the vehicle counting information in a file and save it
