@@ -25,8 +25,6 @@ busTime = 2.5
 truckTime = 2.5
 ambulanceTime = 2.5
 
-timeElapsed =0
-
 font_color = (0, 0, 255)
 font_size = 0.5
 font_thickness = 2
@@ -159,6 +157,7 @@ def postProcess(outputs,img):
 
 def realTime(video):
         # global timeElapsed
+        start = time.perf_counter()
         cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
@@ -179,7 +178,7 @@ def realTime(video):
           
             
             layersNames = net.getLayerNames()
-            outputNames = [(layersNames[i - 1]) for i in net.getUnconnectedOutLayers()]
+            outputNames = [(layersNames[i[0] - 1]) for i in net.getUnconnectedOutLayers()]
             # Feed data to the network
             #print("ouptutNames:", outputNames)
             outputs = net.forward(outputNames)
@@ -192,6 +191,8 @@ def realTime(video):
             cv2.line(img1, (0, middle_line_position), (iw1, middle_line_position), (255, 0, 255), 2)
             cv2.line(img1, (0, up_line_position), (iw1, up_line_position), (0, 0, 255), 2)
             cv2.line(img1, (0, down_line_position), (iw1, down_line_position), (0, 0, 255), 2)
+            
+            greenTime = math.ceil(((down_list[0]*carTime) + (down_list[2]*busTime) + (down_list[3]*truckTime)+ (down_list[1]*bikeTime))/3)
 
             # Draw counting texts in the frame
             cv2.putText(img1, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
@@ -201,25 +202,16 @@ def realTime(video):
             cv2.putText(img1, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-
+            cv2.putText(img1 ,"Density: " + str(greenTime), (20,140), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness )
             # Show the frames
             cv2.imshow('Output1', img1)
           
             if cv2.waitKey(1)==13 :
              break
+
+            
                 
 
-        # Write the vehicle counting information in a file and save it
-
-        with open("data.csv", 'w') as f1:
-            cwriter = csv.writer(f1)
-            cwriter.writerow(['Direction', 'car', 'motorbike', 'bus', 'truck'])
-            up_list.insert(0, "Up")
-            down_list.insert(0, "Down")
-            cwriter.writerow(up_list)
-            cwriter.writerow(down_list)
-        f1.close()
-        # print("Data saved at 'data.csv'")
         # Finally realese the capture object and destroy all active windows
         cap1.release()
          
@@ -227,10 +219,12 @@ def realTime(video):
         cv2.destroyAllWindows()
 
 def Main():
-    Videos = ['Resources/res3_video.mp4' , 'Resources/res5_video.mp4' , 'Resources/res6_video.mp4' , 'Resources/res7_video.mp4']
+    Videos = ['Resources/res3_video.mp4' , 'Resources/res5_video.mp4' , 'Resources/res3_video.mp4' , 'Resources/res7_video.mp4']
     for i in Videos:
         process = Process(target=realTime, args=(i, ))
         process.start()
+
+    
 
 if __name__ == '__main__':
     Main()
