@@ -1,12 +1,29 @@
 # Import necessary packages
 
 import cv2
+import datetime
 import csv
 import collections
 import numpy as np
 from tracker import *
-from multiprocessing import Process
+import multiprocessing
 import time
+import os
+
+from pathlib import Path
+
+current_time = datetime.datetime.now()
+start=current_time.minute*60 + current_time.second
+#print("start:" , start)
+
+
+# Average times for vehicles to pass the intersection
+carTime = 2
+bikeTime = 1
+rickshawTime = 2.25 
+busTime = 2.5
+truckTime = 2.5
+ambulanceTime = 2.5
 
 # Initialize Tracker
 tracker = EuclideanDistTracker()
@@ -18,12 +35,10 @@ confThreshold =0.2
 nmsThreshold= 0.2
 
 # Average times for vehicles to pass the intersection
-carTime = 2
-bikeTime = 1
-rickshawTime = 2.25 
-busTime = 2.5
-truckTime = 2.5
-ambulanceTime = 2.5
+
+
+
+timeElapsed =0
 
 font_color = (0, 0, 255)
 font_size = 0.5
@@ -155,20 +170,18 @@ def postProcess(outputs,img):
         count_vehicle(box_id, img)
 
 
-def realTime(video):
-        # global timeElapsed
-        start = time.perf_counter()
+def realTime(video,greenTime , ambulance_detected , total_vehicle):
+        global start
         cap1 = cv2.VideoCapture(video)
         while True:
             success1, img1 = cap1.read()
 
-            if video== 'Resources/res3_video.mp4' or video== 'Resources/res5_video.mp4' :
+            if video== 'Resources/res3_video_10.mp4' or video== 'Resources/res5_video_10.mp4' or video== 'Resources/res7_video_10.mp4':
                 img1 = cv2.resize(img1,(0,0),None,0.5,0.5)
             else :
                 img1 = cv2.resize(img1,(0,0),None,1,1)
             
-            # timeElapsed+=1
-            # print("timeelapsed:" , timeElapsed)
+                  
             ih1, iw1, channels = img1.shape
 
             blob1 = cv2.dnn.blobFromImage(img1, 1 / 255, (input_size, input_size), [0, 0, 0], 1, crop=False)
@@ -192,39 +205,142 @@ def realTime(video):
             cv2.line(img1, (0, up_line_position), (iw1, up_line_position), (0, 0, 255), 2)
             cv2.line(img1, (0, down_line_position), (iw1, down_line_position), (0, 0, 255), 2)
             
-            greenTime = math.ceil(((down_list[0]*carTime) + (down_list[2]*busTime) + (down_list[3]*truckTime)+ (down_list[1]*bikeTime))/3)
+            
+            # to correct the mistakenly detected bus in the video
+            if video== 'Resources/res6_video_10.mp4':
+                down_list[2]=0
+
+            greenTime.value = math.ceil(((down_list[0]*carTime) + (down_list[2]*busTime) + (down_list[3]*truckTime)+ (down_list[1]*bikeTime))/2)
+
+            totalVehicleCount=down_list[0]+down_list[1]+down_list[2]+down_list[3]
+
 
             # Draw counting texts in the frame
             cv2.putText(img1, "Up", (110, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Down", (160, 20), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Car:        "+str(up_list[0])+"     "+ str(down_list[0]), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Motorbike:  "+str(up_list[1])+"     "+ str(down_list[1]), (20, 60), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img1, "Bus:        "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            cv2.putText(img1, "Ambulance:  "+str(up_list[2])+"     "+ str(down_list[2]), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             cv2.putText(img1, "Truck:      "+str(up_list[3])+"     "+ str(down_list[3]), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img1, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(down_list[0]+down_list[1]+down_list[2]+down_list[3]),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
-            cv2.putText(img1 ,"Density: " + str(greenTime), (20,140), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness )
+            cv2.putText(img1, "Total:      "+str(up_list[0]+up_list[1]+up_list[2]+up_list[3])+"     "+ str(totalVehicleCount),(20, 120), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
+            #cv2.putText(img1 ,"Density:     "+str(greenTime.value) , (20,140) ,  cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, font_thickness)
             # Show the frames
-            cv2.imshow('Output1', img1)
-          
-            if cv2.waitKey(1)==13 :
-             break
+            cv2.imshow('Lane', img1)
+                  
+                        
+            total_vehicle.value=totalVehicleCount
 
-            
-                
+            if down_list[2]>=1: #bus is considered as ambulance here
+                ambulance_detected.value=1
+
+            if cv2.waitKey(1)==13 :
+                break
 
         # Finally realese the capture object and destroy all active windows
-        cap1.release()
-         
-
+        #print("appended greentimer:" , greenTime.value , " to process id:" , format(os.getpid()))
+        cap1.release() 
         cv2.destroyAllWindows()
+        
+
 
 def Main():
-    Videos = ['Resources/res3_video.mp4' , 'Resources/res5_video.mp4' , 'Resources/res3_video.mp4' , 'Resources/res7_video.mp4']
-    for i in Videos:
-        process = Process(target=realTime, args=(i, ))
-        process.start()
-
+    processed_lane=["False"  , "False" , "False" , "False"]
+    currentGreen=0
     
+    for round in range(0,4):
+        print('CurrentGreen',currentGreen)
+        processed_lane[currentGreen] = "True"
+        greentimer=[]             #stores green timer for every lane 
+        ambulance_detected=[]    #stores ambulance detection count of very lane
+        total_vehicle=[]   #stores total vehicles in every lane
+        processes=[]
+        Videos = ['Resources/res5_video_10.mp4' , 'Resources/res3_video_10.mp4' , 'Resources/res6_video_10.mp4' , 'Resources/res5_video_10.mp4','Resources/res7_video_10.mp4']
+        lane1 = multiprocessing.Value('i',0)
+        lane2 = multiprocessing.Value('i',0)
+        lane3 = multiprocessing.Value('i',0)
+        lane4 = multiprocessing.Value('i',0)
+
+        ambulance_detected1= multiprocessing.Value('i' , 0)
+        ambulance_detected2= multiprocessing.Value('i' , 0)
+        ambulance_detected3= multiprocessing.Value('i' , 0)
+        ambulance_detected4= multiprocessing.Value('i' , 0)
+
+        total_vehicle1=multiprocessing.Value('i' ,0)
+        total_vehicle2=multiprocessing.Value('i' ,0)
+        total_vehicle3=multiprocessing.Value('i' ,0)
+        total_vehicle4=multiprocessing.Value('i' ,0)
+
+
+        count = 0
+        for i in Videos:
+            count=count+1
+            if count==1:
+                process = multiprocessing.Process(target=realTime, args=(i,lane1,ambulance_detected1,total_vehicle1,))
+                process.start()
+                processes.append(process)
+            elif count==2:
+                process = multiprocessing.Process(target=realTime, args=(i,lane2,ambulance_detected2,total_vehicle2,))
+                process.start()
+                processes.append(process)
+            elif count==3:
+                process = multiprocessing.Process(target=realTime, args=(i,lane3,ambulance_detected3,total_vehicle3,))
+                process.start()
+                processes.append(process)
+            elif count==4 and round!=1:
+                process = multiprocessing.Process(target=realTime, args=(i,lane4,ambulance_detected4, total_vehicle4,)) 
+                process.start()
+                processes.append(process)
+            elif count==5 and round==1:
+                process = multiprocessing.Process(target=realTime, args=(i,lane4,ambulance_detected4, total_vehicle4,))  
+                process.start()
+                processes.append(process) 
+            else :
+                pass    
+            
+        
+        for process in processes:
+            process.join()  
+
+        greentimer.append(lane1)
+        greentimer.append(lane2)
+        greentimer.append(lane3)
+        greentimer.append(lane4)
+        
+        ambulance_detected.append(ambulance_detected1)
+        ambulance_detected.append(ambulance_detected2)
+        ambulance_detected.append(ambulance_detected3)
+        ambulance_detected.append(ambulance_detected4)
+
+        total_vehicle.append(total_vehicle1)
+        total_vehicle.append(total_vehicle2)
+        total_vehicle.append(total_vehicle3)
+        total_vehicle.append(total_vehicle4)
+        
+        for i in range(0,4):
+            print('No of vehicles in lane',i+1,':',total_vehicle[i].value)
+        
+        print('Signals for all lanes')
+        for i in range(0,4):
+            if i==currentGreen:
+                print('Signal for lane',i+1,'Green   and   Green Timer = ', greentimer[i].value)
+            else:
+                print('Signal for lane',i+1,'Red')
+        
+        counter=0
+        
+        print('For current Green',currentGreen)
+        for i in range(0,4):
+            if processed_lane[i]=="False":
+                counter=counter+1
+                if counter==1:
+                    currentGreen=i
+                    print('First false ',i)
+                elif ambulance_detected[i].value==1 and counter!=1:
+                    currentGreen=i
+                    print('ambulance detected in',i)
+                   
+
+
 
 if __name__ == '__main__':
     Main()
